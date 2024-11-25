@@ -37,24 +37,20 @@ contract HannesExchangePairTest is Test {
 
         // 部署并初始化交易所合约
         exchange = new HannesExchangePair();
-        exchange.initialize(address(tokenA), address(tokenB));
     }
 
     /// @notice 测试addLiquidity函数
     /// @dev 验证流动性添加后储备量是否正确
     function testAddLiquidity() public {
-
     }
 
     /// @notice 测试swap函数
     /// @dev 验证代币交换后接收的输出是否有效
     function testSwapTokens() public {
-
     }
 
     /// @notice 测试暂停功能
     /// @dev 验证在合约暂停后，是否拒绝进一步操作
     function testEmergencyPause() public {
-
     }
 }

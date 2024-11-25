@@ -76,11 +76,9 @@ contract HannesExchangePair is
     error InvalidK();
     error TransferFailed();
 
-    /**
-     * @custom:oz-upgrades-unsafe-allow constructor
-     *
-     * 安全性: 确保初始化方法只运行一次，以防止意外重新初始化
-     */
+    /// 安全性: 确保初始化方法只运行一次，以防止意外重新初始化
+    
+    /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
         _disableInitializers();
     }
