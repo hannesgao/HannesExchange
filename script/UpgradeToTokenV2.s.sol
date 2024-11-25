@@ -1,10 +1,22 @@
-// SPDX-License-Identifier: MIT
+/// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
 import "forge-std/Script.sol";
 import "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import {LPTokenV2} from "../src/upgradeable/LPTokenV2.sol";
 import {Upgrades} from "openzeppelin-foundry-upgrades/Upgrades.sol";
+
+/// 部署注意事项：
+/// 部署前请按需修改该脚本参数中的各种EOA以及合约账户地址
+/// 部署前需在 .env 以及 foundry.toml 中设置部署用测试EOA账户的私钥 PRIVATE_KEY_1 和EtherScan的API秘钥 ETHERSCAN_API_KEY
+/// 部署前请一定确认 .gitignore 中有 .env 文件，以确保私钥和API秘钥不被同步至远程仓库
+
+/// 部署命令：
+/// forge script script/UpgradeToTokenV2.s.sol --rpc-url sepolia --broadcast --verify
+
+/// LPToken V1逻辑合约地址：0x9E27b6d0D0f149dD069AD9f3AC61050F569a5063
+/// LPToken V2逻辑合约地址：0x15ebF5c909153E906698b23FfB5b80889af1b546
+/// UUPS代理合约地址：0x956EAF8F00e3f1D30881e9EF91d93A09C5013dF4
 
 contract UpgradeToTokenV2 is Script {
     function run() public {
@@ -21,9 +33,6 @@ contract UpgradeToTokenV2 is Script {
 
         /// 部署新的逻辑合约 LPTokenV2
         LPTokenV2 tokenV2 = new LPTokenV2();
-
-        /// 将新的逻辑合约的 initializer() 函数的三个参数编码进部署代理合约时的 calldata
-        /// bytes memory data = abi.encodeCall(LPTokenV2.initialize, (admin, minter, upgrader));
 
         /// 备注: 在使用 UUPS 模式进行合约升级时，新的逻辑合约地址被添加至代理合约中
         /// 而代理合约的存储不会被重置，所以代理合约中原有的逻辑合约的状态变量值依然有效
@@ -49,13 +58,3 @@ contract UpgradeToTokenV2 is Script {
     }
 }
 
-/// 部署注意事项：
-/// 部署前请按需修改该脚本参数中的各种EOA以及合约账户地址
-/// 部署前需在 .env 以及 foundry.toml 中设置部署用测试EOA账户的私钥 PRIVATE_KEY_1 和EtherScan的API秘钥 ETHERSCAN_API_KEY
-/// 部署前请一定确认 .gitignore 中有 .env 文件，以确保私钥和API秘钥不被同步至远程仓库
-
-/// 部署命令: forge script script/UpgradeToTokenV2.s.sol --rpc-url sepolia --broadcast --verify
-
-/// LPToken V1逻辑合约地址: 0x9E27b6d0D0f149dD069AD9f3AC61050F569a5063
-/// LPToken V2逻辑合约地址：0x15ebF5c909153E906698b23FfB5b80889af1b546
-/// UUPS代理合约地址: 0x956EAF8F00e3f1D30881e9EF91d93A09C5013dF4

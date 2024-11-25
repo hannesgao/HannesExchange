@@ -1,9 +1,21 @@
-// SPDX-License-Identifier: MIT
+/// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
 import "../src/upgradeable/LPToken.sol";
 import "forge-std/Script.sol";
 import "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
+
+/// 部署注意事项：
+/// 部署前请按需修改该脚本参数中的各种EOA以及合约账户地址
+/// 部署前需在 .env 以及 foundry.toml 中设置部署用测试EOA账户的私钥 PRIVATE_KEY_1 和EtherScan的API秘钥 ETHERSCAN_API_KEY
+/// 部署前请一定确认 .gitignore 中有 .env 文件，以确保私钥和API秘钥不被同步至远程仓库
+
+/// 部署命令：
+/// forge script script/DeployUUPSProxy.s.sol --rpc-url sepolia --broadcast --verify
+
+/// 合约地址：
+/// LPToken V1逻辑合约地址: 0x9E27b6d0D0f149dD069AD9f3AC61050F569a5063
+/// UUPS代理合约地址: 0x956EAF8F00e3f1D30881e9EF91d93A09C5013dF4
 
 contract DeployUUPSProxy is Script {
     function run() public {
@@ -43,13 +55,3 @@ contract DeployUUPSProxy is Script {
     }
 }
 
-/// 部署注意事项：
-/// 部署前请按需修改该脚本参数中的各种EOA以及合约账户地址
-/// 部署前需在 .env 以及 foundry.toml 中设置部署用测试EOA账户的私钥 PRIVATE_KEY_1 和EtherScan的API秘钥 ETHERSCAN_API_KEY
-/// 部署前请一定确认 .gitignore 中有 .env 文件，以确保私钥和API秘钥不被同步至远程仓库
-
-/// 部署命令：forge script script/DeployUUPSProxy.s.sol --rpc-url sepolia --broadcast --verify
-
-/// 合约地址：
-/// LPToken V1逻辑合约地址: 0x9E27b6d0D0f149dD069AD9f3AC61050F569a5063
-/// UUPS代理合约地址: 0x956EAF8F00e3f1D30881e9EF91d93A09C5013dF4
