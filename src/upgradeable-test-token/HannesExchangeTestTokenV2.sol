@@ -9,8 +9,8 @@ import {ERC20PermitUpgradeable} from "@openzeppelin/contracts-upgradeable/token/
 import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
-/// @custom:oz-upgrades-from LPToken
-contract LPTokenV2 is
+/// @custom:oz-upgrades-from HannesExchangeTestTokenV1
+contract HannesExchangeTestTokenV2 is
     Initializable,
     ERC20Upgradeable,
     ERC20BurnableUpgradeable,
@@ -40,6 +40,9 @@ contract LPTokenV2 is
         _grantRole(DEFAULT_ADMIN_ROLE, defaultAdmin);
         _grantRole(MINTER_ROLE, minter);
         _grantRole(UPGRADER_ROLE, upgrader);
+
+        // 初始供应量为100万枚
+        _mint(msg.sender, 1000000 ether);
     }
 
     function mint(address to, uint256 amount) public onlyRole(MINTER_ROLE) {

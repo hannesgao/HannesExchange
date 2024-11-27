@@ -1,14 +1,16 @@
 /// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/utils/math/Math.sol";
+import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
+import {AccessControlUpgradeable} from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import {PausableUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
+import {ReentrancyGuardUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
+import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import {ERC20Upgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
+import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
 /**
  * @title HannesExchangePair 合约
@@ -32,12 +34,21 @@ contract HannesExchangePair is
     ReentrancyGuardUpgradeable,
     UUPSUpgradeable 
 {
-    /// ===== 状态变量 =====
+    /// ===== 常量定义 =====
 
     /// 角色定义
     bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");    /// 断路器操作角色
     bytes32 public constant UPGRADER_ROLE = keccak256("UPGRADER_ROLE");    /// 升级操作角色
+        
+    /// 交易费率常数，基数为10000，比如30表示0.3%
+    uint256 public constant SWAP_FEE = 30;
+    uint256 private constant FEE_DENOMINATOR = 10000;
     
+    /// 最小流动性值，防止第一个LP通过极小值垄断份额
+    uint256 private constant MINIMUM_LIQUIDITY = 1000;
+    
+    /// ===== 状态变量 =====
+
     /// 流动性池内代币对的地址
     IERC20 public token0;
     IERC20 public token1;
@@ -48,13 +59,6 @@ contract HannesExchangePair is
     
     /// 最后一次更新储备量的链上时间戳
     uint256 private blockTimestampLast;
-    
-    /// 交易费率常数，基数为10000，比如30表示0.3%
-    uint256 public constant SWAP_FEE = 30;
-    uint256 private constant FEE_DENOMINATOR = 10000;
-    
-    /// 最小流动性值，防止第一个LP通过极小值垄断份额
-    uint256 private constant MINIMUM_LIQUIDITY = 1000;
     
     /// ===== 事件定义 =====
     event Mint(address indexed sender, uint256 amount0, uint256 amount1);    /// 流动性（LP代币）铸造事件
