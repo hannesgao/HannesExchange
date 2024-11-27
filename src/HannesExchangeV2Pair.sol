@@ -18,15 +18,15 @@ import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
  *
  * 安全性与健壮性保证:
  * 1. 使用 OpenZeppelin 的 UUPS 可升级合约标准，确保合约可以安全升级
- * 2. 使用 OpenZeppelin 的 Pausable 实现基于角色的访问控制
- * 3. 使用 OpenZeppelin 的 AccessControl 实现断路器模式（紧急暂停功能）
+ * 2. 使用 OpenZeppelin 的 Pausable 实现断路器模式（紧急暂停功能）
+ * 3. 使用 OpenZeppelin 的 AccessControl 实现基于角色的访问控制
  * 4. 使用 OpenZeppelin 的 ReentrancyGuard 防止重入攻击
  * 5. 添加了滑点保护机制
  * 6. 所有外部调用前后都有状态检查
  * 7. 实现了事件机制，方便跟踪关键操作
  * 8. 价格操纵防护机制
  */
-contract HannesExchangePair is
+contract HannesExchangeV2Pair is
     Initializable,
     ERC20Upgradeable,
     AccessControlUpgradeable,
