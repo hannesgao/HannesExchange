@@ -163,10 +163,7 @@ contract HannesExchangeV1Pair is
         uint256 inputReserve,
         uint256 outputReserve
     ) public pure returns (uint256) {
-        require(
-            inputReserve > 0 && outputReserve > 0,
-            "Insufficient reserve"
-        );
+        require(inputReserve > 0 && outputReserve > 0, "Insufficient reserve");
         require(inputAmount > 0, "Invalid input amount");
 
         // 计算交易费用（0.3%）

@@ -31,7 +31,8 @@ contract HannesExchangeV1Factory is
     /// 角色定义
     bytes32 public constant UPGRADER_ROLE = keccak256("UPGRADER_ROLE");
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
-    bytes32 public constant EXCHANGE_CREATOR_ROLE = keccak256("EXCHANGE_CREATOR_ROLE");
+    bytes32 public constant EXCHANGE_CREATOR_ROLE =
+        keccak256("EXCHANGE_CREATOR_ROLE");
 
     /// 状态变量
     mapping(address => address) public tokenToExchange;
@@ -56,7 +57,7 @@ contract HannesExchangeV1Factory is
      * @param _admin 管理员地址
      * @param _upgrader 升级角色地址
      * @param _pauser 暂停角色地址
-     * @param _exchangeCreator  HannesExchangeV1Pair 创建者角色地址
+     * @param _exchangeCreator HannesExchangeV1Pair 创建者角色地址
      */
     function initialize(
         address _admin,
@@ -87,9 +88,9 @@ contract HannesExchangeV1Factory is
     /**
      * @dev 创建新的 HannesExchangeV1Pair 实例
      * @param _tokenAddress 代币地址
-     * @param _admin  HannesExchangeV1Pair 管理员地址
-     * @param _upgrader  HannesExchangeV1Pair 升级角色地址
-     * @param _pauser  HannesExchangeV1Pair 暂停角色地址
+     * @param _admin HannesExchangeV1Pair 管理员地址
+     * @param _upgrader HannesExchangeV1Pair 升级角色地址
+     * @param _pauser HannesExchangeV1Pair 暂停角色地址
      * @notice 只有具有 EXCHANGE_CREATOR_ROLE 的地址可以调用
      * @notice 合约必须未暂停
      */
@@ -162,7 +163,7 @@ contract HannesExchangeV1Factory is
 
     /**
      * @dev 获取指定 HannesExchangeV1Pair 的代币地址
-     * @param _exchange  HannesExchangeV1Pair 地址
+     * @param _exchange HannesExchangeV1Pair 地址
      */
     function getToken(address _exchange) public view returns (address) {
         return exchangeToToken[_exchange];
