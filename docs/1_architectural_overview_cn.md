@@ -14,7 +14,7 @@
 
 - Hannes Exchange V2 可以理解为省略了 `Router` 合约的，用 Solidity 实现的，可升级的，更加安全的，实现了基于角色的访问控制的 Uniswap V2 的简化版合约实现（支持 `ERC20 ↔ ERC20` ）。
 
-如需实现完整的 `Router - Factory - Pair/Pool` 架构，以及任意 `ERC20 ↔ ERC20` 的直接兑换功能，需要引入含 `ETH-warper` 逻辑的 `Router` 合约，和一个新的，只含 `ERC20 ↔ ERC20` 兑换逻辑的 LP 合约框架，该框架可以参考本项目中 HannesExchangeV2Factory 和 HannesExchangeV2Pair 的实现。
+如需实现完整的 `Router - Factory - Pair/Pool` 架构，以及任意 `ERC20 ↔ ERC20` 的直接兑换功能，需要引入含 `ETH-warper` 逻辑的 `Router` 合约，和一个新的，只含 `ERC20 ↔ ERC20` 兑换逻辑的 LP 合约框架，该框架可以参考本项目中 [HannesExchangeV2Pair](../src/HannesExchangeV2Pair.sol) 和相应的工厂合约 [HannesExchangeV2Factory](../src/HannesExchangeV2Factory.sol) 的实现。
 
 本项目的作者是 [Hannes Gao (hannesgao.eth)](https://github.com/hannesgao)。
 
@@ -103,51 +103,64 @@ function getAmount(
 ### 3.1 合约架构图示
 ```mermaid
 flowchart TB
-    subgraph "工厂合约"
-        FactoryLogic["工厂逻辑合约\nHannesExchangeV1Factory"]
-        FactoryProxy["工厂代理合约\nERC1967Proxy"]
-        FactoryStorage["工厂存储\n- tokenToExchange mapping\n- exchangeToToken mapping\n- allExchanges array"]
+    subgraph FACTORYS["工厂合约"]
+        FactoryLogic["工厂逻辑合约"]
+        FactoryProxy["工厂代理合约"]
+        FactoryStorage["工厂存储"]
 
-        FactoryLogic --> |"实现"| FactoryProxy
+        FactoryProxy --> |"委托调用"| FactoryLogic
         FactoryProxy --> |"读写"| FactoryStorage
     end
 
-    subgraph "流动性池"
-        PairLogic["流动性池逻辑合约\nHannesExchangeV1Pair"]
-        PairProxy1["流动性池代理1"]
-        PairProxy2["流动性池代理2"]
-        PairStorage["流动性池存储\n- ETH reserves\n- Token reserves\n- LP token supply"]
+    subgraph POOLS["流动性池合约"]
+        PairLogic["流动性池逻辑合约"]
 
-        PairLogic --> |"实现"| PairProxy1
-        PairLogic --> |"实现"| PairProxy2
-        PairProxy1 --> |"读写"| PairStorage
-        PairProxy2 --> |"读写"| PairStorage
+        subgraph POOL2["流动性池2"]
+            PairProxy2["流动性池代理合约2"]
+            PairStorage2["流动性池2存储"]
+            PairProxy2 --> |"读写"| PairStorage2
+        end
+
+        subgraph POOL1["流动性池1"]
+            PairProxy1["流动性池代理合约1"]
+            PairStorage1["流动性池1存储"]
+            PairProxy1 --> |"读写"| PairStorage1
+        end
+
+        PairProxy1 --> |"委托调用"| PairLogic
+        PairProxy2 --> |"委托调用"| PairLogic            
     end
 
-    subgraph "权限控制机制"
-        RBAC["基于角色的访问控制"]
-        Roles["角色分配\n- DEFAULT_ADMIN_ROLE\n- UPGRADER_ROLE\n- PAUSER_ROLE\n- EXCHANGE_CREATOR_ROLE"]
+    subgraph SAFEMETHOD["安全机制"]
+        SafeMethods["安全机制"]
+            AAC["权限控制"]
+                RBAC["基于角色的访问控制"]
+                Roles["角色分配"]
+            Pausable["紧急暂停"]
+            ReentrancyGuard["重入保护"]
+            SafeTransfer["安全转账"]
+            OverflowGuard["溢出保护"]
+            DoSGuard["DoS保护"]
+            TradeGuard["交易安全机制"]
+                SlippageControl["滑点控制"]
 
-        RBAC --> Roles
+        AAC --> |"实现"| RBAC
+        RBAC --> |"实现"| Roles        
+
+        SafeMethods --> |"包括"| AAC
+        SafeMethods --> |"包括"| ReentrancyGuard
+        SafeMethods --> |"包括"| Pausable
+        SafeMethods --> |"包括"| SafeTransfer
+        SafeMethods --> |"包括"| OverflowGuard       
+        SafeMethods --> |"包括"| DoSGuard       
+        SafeMethods --> |"包括"| TradeGuard      
+            TradeGuard --> |"包括"| SlippageControl       
     end
 
-    subgraph "安全机制"
-        ReentrancyGuard["重入保护"]
-        Pausable["暂停机制"]
-        SafeTransfer["安全转账"]
-        SlippageControl["滑点控制"]
-    end
+    FactoryProxy --> |"部署"| POOLS
+    PairLogic --> |"实现"| SafeMethods
+    FactoryLogic --> |"实现"| SafeMethods
 
-    FactoryProxy --> |"部署"| PairProxy1
-    FactoryProxy --> |"部署"| PairProxy2
-    RBAC --> |"控制"| FactoryProxy
-    RBAC --> |"控制"| PairProxy1
-    RBAC --> |"控制"| PairProxy2
-
-    ReentrancyGuard --> |"保护"| PairProxy1
-    Pausable --> |"保护"| PairProxy1
-    SafeTransfer --> |"保护"| PairProxy1
-    SlippageControl --> |"保护"| PairProxy1
 ```
 
 --- 

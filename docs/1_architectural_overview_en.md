@@ -14,7 +14,7 @@ Considering these requirements and the project's limited time and resources (7 d
 
 - Hannes Exchange V2 can be understood as a simplified version of Uniswap V2 implemented in Solidity, omitting the `Router` contract, with upgradeable functionality, enhanced security, and role-based access control implementation. ( `ERC20 ↔ ERC20` supported)
 
-To implement a complete `Router - Factory - Pair/Pool` architecture and direct `ERC20 ↔ ERC20` exchange functionality, it would require introducing a `Router` contract with `ETH-wrapper` logic and a new LP contract framework containing only `ERC20 ↔ ERC20` exchange logic, which could reference the implementation of HannesExchangeV2Factory and HannesExchangeV2Pair in this project.
+To implement a complete `Router - Factory - Pair/Pool` architecture and direct `ERC20 ↔ ERC20` exchange functionality, it would require introducing a `Router` contract with `ETH-wrapper` logic and a new LP contract framework containing only `ERC20 ↔ ERC20` exchange logic, which could reference the implementation of [HannesExchangeV2Pair](../src/HannesExchangeV2Pair.sol) and the respective factory contract [HannesExchangeV2Factory](../src/HannesExchangeV2Factory.sol) in this project.
 
 This project's author is [Hannes Gao (hannesgao.eth)](https://github.com/hannesgao).
 
@@ -103,51 +103,63 @@ Removing Liquidity:
 ### 3.1 Contract Architecture Diagram
 ```mermaid
 flowchart TB
-    subgraph "Factory Contract"
-        FactoryLogic["Factory Logic Contract\nHannesExchangeV1Factory"]
-        FactoryProxy["Factory Proxy Contract\nERC1967Proxy"]
-        FactoryStorage["Factory Storage\n- tokenToExchange mapping\n- exchangeToToken mapping\n- allExchanges array"]
+    subgraph FACTORYS["Factory Contract"]
+        FactoryLogic["Factory Logic Contract"]
+        FactoryProxy["Factory Proxy Contract"]
+        FactoryStorage["Factory Storage"]
 
-        FactoryLogic --> |"implements"| FactoryProxy
-        FactoryProxy --> |"read/write"| FactoryStorage
+        FactoryProxy --> |"Delegate Call"| FactoryLogic
+        FactoryProxy --> |"Read/Write"| FactoryStorage
     end
 
-    subgraph "Liquidity Pool"
-        PairLogic["Pair Logic Contract\nHannesExchangeV1Pair"]
-        PairProxy1["Pair Proxy 1"]
-        PairProxy2["Pair Proxy 2"]
-        PairStorage["Pair Storage\n- ETH reserves\n- Token reserves\n- LP token supply"]
+    subgraph POOLS["Liquidity Pool Contracts"]
+        PairLogic["Liquidity Pool Logic Contract"]
 
-        PairLogic --> |"implements"| PairProxy1
-        PairLogic --> |"implements"| PairProxy2
-        PairProxy1 --> |"read/write"| PairStorage
-        PairProxy2 --> |"read/write"| PairStorage
+        subgraph POOL2["Liquidity Pool 2"]
+            PairProxy2["Liquidity Pool Proxy Contract 2"]
+            PairStorage2["Liquidity Pool 2 Storage"]
+            PairProxy2 --> |"Read/Write"| PairStorage2
+        end
+
+        subgraph POOL1["Liquidity Pool 1"]
+            PairProxy1["Liquidity Pool Proxy Contract 1"]
+            PairStorage1["Liquidity Pool 1 Storage"]
+            PairProxy1 --> |"Read/Write"| PairStorage1
+        end
+
+        PairProxy1 --> |"Delegate Call"| PairLogic
+        PairProxy2 --> |"Delegate Call"| PairLogic            
     end
 
-    subgraph "Access Control Mechanism"
-        RBAC["Role-Based Access Control"]
-        Roles["Role Assignment\n- DEFAULT_ADMIN_ROLE\n- UPGRADER_ROLE\n- PAUSER_ROLE\n- EXCHANGE_CREATOR_ROLE"]
+    subgraph SAFEMETHOD["Security Mechanisms"]
+        SafeMethods["Security Mechanisms"]
+            AAC["Access Control"]
+                RBAC["Role-Based Access Control"]
+                Roles["Role Assignment"]
+            Pausable["Emergency Pause"]
+            ReentrancyGuard["Reentrancy Protection"]
+            SafeTransfer["Safe Transfer"]
+            OverflowGuard["Overflow Protection"]
+            DoSGuard["DoS Protection"]
+            TradeGuard["Trade Security Mechanisms"]
+                SlippageControl["Slippage Control"]
 
-        RBAC --> Roles
+        AAC --> |"Implemented by"| RBAC
+        RBAC --> |"Realizes"| Roles        
+
+        SafeMethods --> |"Includes"| AAC
+        SafeMethods --> |"Includes"| ReentrancyGuard
+        SafeMethods --> |"Includes"| Pausable
+        SafeMethods --> |"Includes"| SafeTransfer
+        SafeMethods --> |"Includes"| OverflowGuard       
+        SafeMethods --> |"Includes"| DoSGuard       
+        SafeMethods --> |"Includes"| TradeGuard      
+            TradeGuard --> |"Includes"| SlippageControl       
     end
 
-    subgraph "Security Mechanism"
-        ReentrancyGuard["Reentrancy Guard"]
-        Pausable["Pausable"]
-        SafeTransfer["Safe Transfer"]
-        SlippageControl["Slippage Control"]
-    end
-
-    FactoryProxy --> |"deploys"| PairProxy1
-    FactoryProxy --> |"deploys"| PairProxy2
-    RBAC --> |"controls"| FactoryProxy
-    RBAC --> |"controls"| PairProxy1
-    RBAC --> |"controls"| PairProxy2
-
-    ReentrancyGuard --> |"protects"| PairProxy1
-    Pausable --> |"protects"| PairProxy1
-    SafeTransfer --> |"protects"| PairProxy1
-    SlippageControl --> |"protects"| PairProxy1
+    FactoryProxy --> |"Deploys"| POOLS
+    PairLogic --> |"Implements"| SafeMethods
+    FactoryLogic --> |"Implements"| SafeMethods
 ```
 
 --- 
