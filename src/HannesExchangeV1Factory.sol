@@ -8,15 +8,6 @@ import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Ini
 import {ERC1967Proxy} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import "./HannesExchangeV1Pair.sol";
 
-/// 在部署工厂合约时按照以下步骤操作：
-
-/// 1. 部署工厂合约（逻辑合约）
-/// 2. 部署逻辑合约的代理合约
-/// 3. 通过代理合约调用 initialize() 函数进行初始化
-/// 4. 使用具有 EXCHANGE_CREATOR_ROLE 的EOA账户来创建新的 HannesExchangeV1Pair 实例
-
-/// 注意：在创建新的 HannesExchangeV1Pair 实例时，需要指定相应的管理员、升级者和暂停者角色
-
 /**
  * @title HannesExchangeV1Factory
  * @dev 用于 HannesExchangeV1 的可升级工厂合约，用于部署和管理多个 HannesExchangeV1Pair 实例，以实现多个流动性池（ETH-ERC20 Token Pair）

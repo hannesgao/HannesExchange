@@ -12,7 +12,7 @@
 
 如需实现完整的 `Router - Factory - Pair/Pool` 架构，以及任意 `ERC20 ↔ ERC20` 的直接兑换功能，需要引入含 `ETH-warper` 逻辑的 `Router` 合约，和一个新的，只含 `ERC20 ↔ ERC20` 兑换逻辑的 LP 合约框架，该框架可以参考本项目中 HannesExchangeV2Pair 的实现。
 
-本项目的作者是 [Hannes (hannesgao.eth)](https:///github.com/hannesgao)
+本项目的作者是 [Hannes (hannesgao.eth)](https://github.com/hannesgao)
 
 ## 2. 核心合约
 
@@ -63,7 +63,7 @@ function getAmount(
     uint256 inputReserve,
     uint256 outputReserve
 ) public pure returns (uint256) {
-    uint256 inputAmountWithFee = inputAmount * 997;  // 0.3% 手续费
+    uint256 inputAmountWithFee = inputAmount * 997;  /// 0.3% 手续费
     uint256 numerator = inputAmountWithFee * outputReserve;
     uint256 denominator = (inputReserve * 1000) + inputAmountWithFee;
     return numerator / denominator;
@@ -563,7 +563,7 @@ function _authorizeUpgrade(address newImplementation)
 
 ```solidity
 function version() public pure virtual returns (string memory) {
-    return "1.0.0";  // 用于验证升级
+    return "1.0.0";  /// 用于验证升级
 }
 ```
 
@@ -577,10 +577,10 @@ function version() public pure virtual returns (string memory) {
 
 #### 5.3.1 部署流程
 ```solidity
-// 1. 部署逻辑合约
+/// 1. 部署逻辑合约
 HannesExchangeV1Factory factory = new HannesExchangeV1Factory();
 
-// 2. 准备初始化数据
+/// 2. 准备初始化数据
 bytes memory initData = abi.encodeWithSelector(
     HannesExchangeV1Factory.initialize.selector,
     admin,
@@ -589,7 +589,7 @@ bytes memory initData = abi.encodeWithSelector(
     creator
 );
 
-// 3. 部署代理合约
+/// 3. 部署代理合约
 ERC1967Proxy proxy = new ERC1967Proxy(
     address(factory),
     initData

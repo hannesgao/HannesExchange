@@ -12,7 +12,7 @@ This project can be understood as a simplified version of Uniswap V1 implemented
 
 To implement a complete `Router - Factory - Pair/Pool` architecture and direct `ERC20 ↔ ERC20` exchange functionality, it would require introducing a `Router` contract with `ETH-wrapper` logic and a new LP contract framework containing only `ERC20 ↔ ERC20` exchange logic, which could reference the implementation of HannesExchangeV2Pair in this project.
 
-This project's author is [Hannes (hannesgao.eth)](https:///github.com/hannesgao)
+This project's author is [Hannes (hannesgao.eth)](https://github.com/hannesgao)
 
 ## 2. Core Contracts
 
@@ -63,7 +63,7 @@ function getAmount(
     uint256 inputReserve,
     uint256 outputReserve
 ) public pure returns (uint256) {
-    uint256 inputAmountWithFee = inputAmount * 997;  // 0.3% fee
+    uint256 inputAmountWithFee = inputAmount * 997;  /// 0.3% fee
     uint256 numerator = inputAmountWithFee * outputReserve;
     uint256 denominator = (inputReserve * 1000) + inputAmountWithFee;
     return numerator / denominator;
@@ -547,7 +547,7 @@ function _authorizeUpgrade(address newImplementation)
 
 ```solidity
 function version() public pure virtual returns (string memory) {
-    return "1.0.0";  // For upgrade verification
+    return "1.0.0";  /// For upgrade verification
 }
 ```
 
@@ -561,10 +561,10 @@ function version() public pure virtual returns (string memory) {
 
 #### 5.3.1 Deployment Process
 ```solidity
-// 1. Deploy logic contract
+/// 1. Deploy logic contract
 HannesExchangeV1Factory factory = new HannesExchangeV1Factory();
 
-// 2. Prepare initialization data
+/// 2. Prepare initialization data
 bytes memory initData = abi.encodeWithSelector(
     HannesExchangeV1Factory.initialize.selector,
     admin,
@@ -573,7 +573,7 @@ bytes memory initData = abi.encodeWithSelector(
     creator
 );
 
-// 3. Deploy proxy contract
+/// 3. Deploy proxy contract
 ERC1967Proxy proxy = new ERC1967Proxy(
     address(factory),
     initData

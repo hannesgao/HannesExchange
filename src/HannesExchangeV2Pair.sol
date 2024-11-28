@@ -13,7 +13,7 @@ import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
 /**
- * @title HannesExchangePair 合约
+ * @title HannesExchangeV2Pair 合约
  * @dev 实现了特定代币对流动性池的核心功能，包括添加/移除流动性和代币交换
  *
  * 安全性与健壮性保证:
@@ -48,6 +48,9 @@ contract HannesExchangeV2Pair is
     uint256 private constant MINIMUM_LIQUIDITY = 1000;
 
     /// ===== 状态变量 =====
+
+    /// 工厂合约地址
+    address public factoryAddress;
 
     /// 流动性池内代币对的地址
     IERC20 public token0;
@@ -96,9 +99,9 @@ contract HannesExchangeV2Pair is
      */
     function initialize(address _token0, address _token1) public initializer {
         /// 安全性：代币地址检查
-        require(_token0 != address(0), "HannesExchangePair: ZERO_ADDRESS");
-        require(_token1 != address(0), "HannesExchangePair: ZERO_ADDRESS");
-        require(_token0 != _token1, "HannesExchangePair: IDENTICAL_ADDRESSES");
+        require(_token0 != address(0), "HannesExchangeV2Pair: ZERO_ADDRESS");
+        require(_token1 != address(0), "HannesExchangeV2Pair: ZERO_ADDRESS");
+        require(_token0 != _token1, "HannesExchangeV2Pair: IDENTICAL_ADDRESSES");
 
         /// 安全性: 初始化所有基础合约
         __Pausable_init();
@@ -114,8 +117,10 @@ contract HannesExchangeV2Pair is
         _grantRole(OPERATOR_ROLE, msg.sender);
         _grantRole(UPGRADER_ROLE, msg.sender);
 
+        /// 设置状态变量
         token0 = IERC20(_token0);
         token1 = IERC20(_token1);
+        factoryAddress = msg.sender;
     }
 
     /**
@@ -141,7 +146,7 @@ contract HannesExchangeV2Pair is
         address to
     ) external nonReentrant whenNotPaused returns (uint256 liquidity) {
         /// 安全性: 参数检查
-        require(to != address(0), "HannesExchangePair: INVALID_TO");
+        require(to != address(0), "HannesExchangeV2Pair: INVALID_TO");
 
         /// Gas优化: 缓存储备量
         uint256 _reserve0 = reserve0;
@@ -166,7 +171,7 @@ contract HannesExchangeV2Pair is
                 /// 安全性: 检查最小数量要求
                 require(
                     amount1Optimal >= amount1Min,
-                    "HannesExchangePair: INSUFFICIENT_1_AMOUNT"
+                    "HannesExchangeV2Pair: INSUFFICIENT_1_AMOUNT"
                 );
                 amount0 = amount0Desired;
                 amount1 = amount1Optimal;
@@ -180,7 +185,7 @@ contract HannesExchangeV2Pair is
                 /// 安全性: 检查最小数量要求
                 require(
                     amount0Optimal >= amount0Min,
-                    "HannesExchangePair: INSUFFICIENT_0_AMOUNT"
+                    "HannesExchangeV2Pair: INSUFFICIENT_0_AMOUNT"
                 );
                 amount0 = amount0Optimal;
                 amount1 = amount1Desired;
@@ -190,11 +195,11 @@ contract HannesExchangeV2Pair is
         /// 安全性: 转移代币
         require(
             token0.transferFrom(msg.sender, address(this), amount0),
-            "HannesExchangePair: TRANSFER_FAILED"
+            "HannesExchangeV2Pair: TRANSFER_FAILED"
         );
         require(
             token1.transferFrom(msg.sender, address(this), amount1),
-            "HannesExchangePair: TRANSFER_FAILED"
+            "HannesExchangeV2Pair: TRANSFER_FAILED"
         );
 
         /// 计算LP代币数量
@@ -216,7 +221,7 @@ contract HannesExchangeV2Pair is
         /// 安全性: 检查流动性数量
         require(
             liquidity > 0,
-            "HannesExchangePair: INSUFFICIENT_LIQUIDITY_MINTED"
+            "HannesExchangeV2Pair: INSUFFICIENT_LIQUIDITY_MINTED"
         );
 
         /// 铸造LP代币
@@ -257,7 +262,7 @@ contract HannesExchangeV2Pair is
         returns (uint256 amount0, uint256 amount1)
     {
         /// 安全性: 地址检查
-        require(to != address(0), "HannesExchangePair: INVALID_TO");
+        require(to != address(0), "HannesExchangeV2Pair: INVALID_TO");
 
         /// Gas优化: 缓存数据
         uint256 _totalSupply = totalSupply();
@@ -270,11 +275,11 @@ contract HannesExchangeV2Pair is
         /// 安全性: 检查最小数量要求
         require(
             amount0 >= amount0Min,
-            "HannesExchangePair: INSUFFICIENT_0_AMOUNT"
+            "HannesExchangeV2Pair: INSUFFICIENT_0_AMOUNT"
         );
         require(
             amount1 >= amount1Min,
-            "HannesExchangePair: INSUFFICIENT_1_AMOUNT"
+            "HannesExchangeV2Pair: INSUFFICIENT_1_AMOUNT"
         );
 
         /// 销毁LP代币
@@ -283,11 +288,11 @@ contract HannesExchangeV2Pair is
         /// 安全性: 转移代币
         require(
             token0.transfer(to, amount0),
-            "HannesExchangePair: TRANSFER_FAILED"
+            "HannesExchangeV2Pair: TRANSFER_FAILED"
         );
         require(
             token1.transfer(to, amount1),
-            "HannesExchangePair: TRANSFER_FAILED"
+            "HannesExchangeV2Pair: TRANSFER_FAILED"
         );
 
         /// 更新储备量
@@ -311,10 +316,10 @@ contract HannesExchangeV2Pair is
         uint256 reserveA,
         uint256 reserveB
     ) public pure returns (uint256 amountB) {
-        require(amountA > 0, "HannesExchangePair: INSUFFICIENT_AMOUNT");
+        require(amountA > 0, "HannesExchangeV2Pair: INSUFFICIENT_AMOUNT");
         require(
             reserveA > 0 && reserveB > 0,
-            "HannesExchangePair: INSUFFICIENT_LIQUIDITY"
+            "HannesExchangeV2Pair: INSUFFICIENT_LIQUIDITY"
         );
         amountB = (amountA * reserveB) / reserveA;
     }
@@ -343,9 +348,9 @@ contract HannesExchangeV2Pair is
         /// 安全性: 基础参数检查
         require(
             amount0Out > 0 || amount1Out > 0,
-            "HannesExchangePair: INSUFFICIENT_OUTPUT_AMOUNT"
+            "HannesExchangeV2Pair: INSUFFICIENT_OUTPUT_AMOUNT"
         );
-        require(to != address(0), "HannesExchangePair: INVALID_TO");
+        require(to != address(0), "HannesExchangeV2Pair: INVALID_TO");
 
         /// Gas优化: 缓存储备量
         uint256 _reserve0 = reserve0;
@@ -354,7 +359,7 @@ contract HannesExchangeV2Pair is
         /// 安全性: 检查输出数量不超过储备量
         require(
             amount0Out < _reserve0 && amount1Out < _reserve1,
-            "HannesExchangePair: INSUFFICIENT_LIQUIDITY"
+            "HannesExchangeV2Pair: INSUFFICIENT_LIQUIDITY"
         );
 
         /// Gas优化: 本地变量存储中间状态
@@ -365,13 +370,13 @@ contract HannesExchangeV2Pair is
         if (amount0Out > 0) {
             require(
                 token0.transfer(to, amount0Out),
-                "HannesExchangePair: TRANSFER_FAILED"
+                "HannesExchangeV2Pair: TRANSFER_FAILED"
             );
         }
         if (amount1Out > 0) {
             require(
                 token1.transfer(to, amount1Out),
-                "HannesExchangePair: TRANSFER_FAILED"
+                "HannesExchangeV2Pair: TRANSFER_FAILED"
             );
         }
 
@@ -390,7 +395,7 @@ contract HannesExchangeV2Pair is
         /// 安全性: 确保有足够的输入金额
         require(
             amount0In > 0 || amount1In > 0,
-            "HannesExchangePair: INSUFFICIENT_INPUT_AMOUNT"
+            "HannesExchangeV2Pair: INSUFFICIENT_INPUT_AMOUNT"
         );
 
         /// 安全性: 验证K值保持不变(考虑手续费后)
@@ -405,7 +410,7 @@ contract HannesExchangeV2Pair is
             require(
                 balance0Adjusted * balance1Adjusted >=
                     _reserve0 * _reserve1 * (FEE_DENOMINATOR ** 2),
-                "HannesExchangePair: K"
+                "HannesExchangeV2Pair: K"
             );
         }
 
@@ -429,11 +434,11 @@ contract HannesExchangeV2Pair is
     ) public pure returns (uint256 amountIn) {
         require(
             amountOut > 0,
-            "HannesExchangePair: INSUFFICIENT_OUTPUT_AMOUNT"
+            "HannesExchangeV2Pair: INSUFFICIENT_OUTPUT_AMOUNT"
         );
         require(
             reserveIn > 0 && reserveOut > 0,
-            "HannesExchangePair: INSUFFICIENT_LIQUIDITY"
+            "HannesExchangeV2Pair: INSUFFICIENT_LIQUIDITY"
         );
 
         uint256 numerator = reserveIn * amountOut * FEE_DENOMINATOR;
@@ -454,10 +459,10 @@ contract HannesExchangeV2Pair is
         uint256 reserveIn,
         uint256 reserveOut
     ) public pure returns (uint256 amountOut) {
-        require(amountIn > 0, "HannesExchangePair: INSUFFICIENT_INPUT_AMOUNT");
+        require(amountIn > 0, "HannesExchangeV2Pair: INSUFFICIENT_INPUT_AMOUNT");
         require(
             reserveIn > 0 && reserveOut > 0,
-            "HannesExchangePair: INSUFFICIENT_LIQUIDITY"
+            "HannesExchangeV2Pair: INSUFFICIENT_LIQUIDITY"
         );
 
         uint256 amountInWithFee = amountIn * (FEE_DENOMINATOR - SWAP_FEE);
@@ -496,5 +501,13 @@ contract HannesExchangeV2Pair is
     /// 恢复运行
     function unpause() external onlyRole(OPERATOR_ROLE) {
         _unpause();
+    }
+
+    /**
+     * @dev 查看合约版本
+     * @notice 用于验证升级是否成功
+     */
+    function version() public pure virtual returns (string memory) {
+        return "2.0.0";
     }
 }
