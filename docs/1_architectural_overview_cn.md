@@ -1,18 +1,22 @@
-# Hannes Exchange V1 项目架构概述
+# Hannes Exchange V1 & V2 项目架构概述
 
 ## 1. 项目简介
 
-本项目架构概述文档描述了 Hannes Exchange V1 项目的**整体架构** ，**详细设计理念**和**开发理念**。
+本项目架构概述文档描述了 Hannes Exchange V1 & V2 项目的**整体架构** ，**详细设计理念**和**开发理念**。
 
 本项目的整体架构参考了 Uniswap V1 和 Uniswap V2 核心合约的架构，即 `Router - Factory - Pair/Pool` 架构。
 
-本项目的 Case 文档中的**智能合约开发**一节中明确要求 AMM 的合约实现需要支持至少两种 `ETH ↔ ERC20` 兑换，即无需直接支持 `ERC20 ↔ ERC20` 兑换，因此无需实现用于 `ERC20 → ETH → ERC20` 的 `Router` 合约。在考虑到以上需求，以及本项目所规定的有限时间和资源（7 天，独立开发）后，在项目规划和合约开发时，对 `Router - Factory - Pair/Pool` 架构进行了简化，形成了目前的 `Factory - Pair/Pool` 架构。
+本项目的 Case 文档中的**智能合约开发**一节中明确要求 AMM 的合约实现需要支持至少两种 `ETH ↔ ERC20` 兑换，即无需直接支持 `ERC20 ↔ ERC20` 兑换，因此无需实现用于 `ERC20 → ETH → ERC20` 的 `Router` 合约。
 
-本项目可以理解为省略了 `Router` 合约的，用 Solidity 实现的，可升级的，更加安全的，实现了基于角色的访问控制的 Uniswap V1 的简化版合约实现。
+在考虑到以上需求，以及本项目所规定的有限时间和资源（7 天，独立开发）后，在项目规划和合约开发时，对 `Router - Factory - Pair/Pool` 架构进行了简化，形成了目前的 `Factory - Pair/Pool` 架构，因此：
 
-如需实现完整的 `Router - Factory - Pair/Pool` 架构，以及任意 `ERC20 ↔ ERC20` 的直接兑换功能，需要引入含 `ETH-warper` 逻辑的 `Router` 合约，和一个新的，只含 `ERC20 ↔ ERC20` 兑换逻辑的 LP 合约框架，该框架可以参考本项目中 HannesExchangeV2Pair 的实现。
+- Hannes Exchange V1 可以理解为省略了 `Router` 合约的，用 Solidity 实现的，可升级的，更加安全的，实现了基于角色的访问控制的 Uniswap V1 的简化版合约实现（只支持 `ETH ↔ ERC20` ）。
 
-本项目的作者是 [Hannes (hannesgao.eth)](https://github.com/hannesgao)
+- Hannes Exchange V2 可以理解为省略了 `Router` 合约的，用 Solidity 实现的，可升级的，更加安全的，实现了基于角色的访问控制的 Uniswap V2 的简化版合约实现（支持 `ERC20 ↔ ERC20` ）。
+
+如需实现完整的 `Router - Factory - Pair/Pool` 架构，以及任意 `ERC20 ↔ ERC20` 的直接兑换功能，需要引入含 `ETH-warper` 逻辑的 `Router` 合约，和一个新的，只含 `ERC20 ↔ ERC20` 兑换逻辑的 LP 合约框架，该框架可以参考本项目中 HannesExchangeV2Factory 和 HannesExchangeV2Pair 的实现。
+
+本项目的作者是 [Hannes Gao (hannesgao.eth)](https://github.com/hannesgao)。
 
 ## 2. 核心合约
 

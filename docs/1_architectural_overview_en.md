@@ -1,4 +1,4 @@
-# Hannes Exchange V1 Project Architectural Overview
+# Hannes Exchange V1 & V2 Project Architectural Overview
 
 ## 1. Project Introduction
 
@@ -6,13 +6,17 @@ This project architectural overview document describes the **overall architectur
 
 The overall architecture of this project references the core contract architecture of Uniswap V1 and Uniswap V2, namely the `Router - Factory - Pair/Pool` architecture.
 
-The Case document's **Smart Contract Development** section explicitly requires that the AMM contract implementation should support at least two types of `ETH ↔ ERC20` exchanges, without needing to directly support `ERC20 ↔ ERC20` exchanges, thus eliminating the need for a `Router` contract for `ERC20 → ETH → ERC20` exchanges. Considering these requirements and the project's limited time and resources (7 days, independent development), the project planning and contract development simplified the `Router - Factory - Pair/Pool` architecture into the current `Factory - Pair/Pool` architecture.
+The Case document's **Smart Contract Development** section explicitly requires that the AMM contract implementation should support at least two types of `ETH ↔ ERC20` exchanges, without needing to directly support `ERC20 ↔ ERC20` exchanges, thus eliminating the need for a `Router` contract for `ERC20 → ETH → ERC20` exchanges. 
 
-This project can be understood as a simplified version of Uniswap V1 implemented in Solidity, omitting the `Router` contract, with upgradeable functionality, enhanced security, and role-based access control implementation.
+Considering these requirements and the project's limited time and resources (7 days, independent development), the project planning and contract development simplified the `Router - Factory - Pair/Pool` architecture into the current `Factory - Pair/Pool` architecture, therefore:
 
-To implement a complete `Router - Factory - Pair/Pool` architecture and direct `ERC20 ↔ ERC20` exchange functionality, it would require introducing a `Router` contract with `ETH-wrapper` logic and a new LP contract framework containing only `ERC20 ↔ ERC20` exchange logic, which could reference the implementation of HannesExchangeV2Pair in this project.
+- Hannes Exchange V1 can be understood as a simplified version of Uniswap V1 implemented in Solidity, omitting the `Router` contract, with upgradeable functionality, enhanced security, and role-based access control implementation. ( `ETH ↔ ERC20` only)
 
-This project's author is [Hannes (hannesgao.eth)](https://github.com/hannesgao)
+- Hannes Exchange V2 can be understood as a simplified version of Uniswap V2 implemented in Solidity, omitting the `Router` contract, with upgradeable functionality, enhanced security, and role-based access control implementation. ( `ERC20 ↔ ERC20` supported)
+
+To implement a complete `Router - Factory - Pair/Pool` architecture and direct `ERC20 ↔ ERC20` exchange functionality, it would require introducing a `Router` contract with `ETH-wrapper` logic and a new LP contract framework containing only `ERC20 ↔ ERC20` exchange logic, which could reference the implementation of HannesExchangeV2Factory and HannesExchangeV2Pair in this project.
+
+This project's author is [Hannes Gao (hannesgao.eth)](https://github.com/hannesgao).
 
 ## 2. Core Contracts
 
