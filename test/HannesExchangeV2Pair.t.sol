@@ -19,7 +19,7 @@ contract MockERC20 is ERC20 {
 /// @title HannesExchangePair单元测试
 /// @dev 验证合约每个功能的行为和边界条件
 contract HannesExchangePairTest is Test {
-    HannesExchangePair exchange; // 交易所合约实例
+    HannesExchangeV2Pair exchange; // 交易所合约实例
     MockERC20 tokenA; // 模拟的ERC20代币A
     MockERC20 tokenB; // 模拟的ERC20代币B
     address owner; // 合约拥有者
@@ -36,7 +36,7 @@ contract HannesExchangePairTest is Test {
         tokenB = new MockERC20("Token B", "TKB");
 
         // 部署并初始化交易所合约
-        exchange = new HannesExchangePair();
+        exchange = new HannesExchangeV2Pair();
     }
 
     /// @notice 测试addLiquidity函数
