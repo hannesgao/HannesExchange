@@ -2,6 +2,13 @@
 
 ## 1. 项目简介
 
+HannesExchange 是一个基于恒定乘积自动做市商模式的去中心化交易所的智能合约实现，包含 HannesExchangeV1 和 HannesExchangeV2 两个版本：
+
+- `HannesExchangeV1Pair`：`ETH` 作为基础货币，只支持 `ETH ↔ ERC20` 直接兑换
+- `HannesExchangeV2Pair`：任意 `ERC20` 代币对，移除了 `ETH` 作为基础货币的限制
+
+---
+
 本项目架构概述文档描述了 Hannes Exchange V1 & V2 项目的**整体架构** ，**详细设计理念**和**开发理念**。
 
 本项目的整体架构参考了 Uniswap V1 和 Uniswap V2 核心合约的架构，即 `Router - Factory - Pair/Pool` 架构。
@@ -15,6 +22,8 @@
 - Hannes Exchange V2 可以理解为省略了 `Router` 合约的，用 Solidity 实现的，可升级的，更加安全的，实现了基于角色的访问控制的 Uniswap V2 的简化版合约实现（支持 `ERC20 ↔ ERC20` ）。
 
 如需实现完整的 `Router - Factory - Pair/Pool` 架构，以及任意 `ERC20 ↔ ERC20` 的直接兑换功能，需要引入含 `ETH-warper` 逻辑的 `Router` 合约，和一个新的，只含 `ERC20 ↔ ERC20` 兑换逻辑的 LP 合约框架，该框架可以参考本项目中 [HannesExchangeV2Pair](../src/HannesExchangeV2Pair.sol) 和相应的工厂合约 [HannesExchangeV2Factory](../src/HannesExchangeV2Factory.sol) 的实现。
+
+---
 
 本项目的作者是 [Hannes Gao (hannesgao.eth)](https://github.com/hannesgao)。
 

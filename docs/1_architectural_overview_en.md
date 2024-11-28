@@ -2,6 +2,13 @@
 
 ## 1. Project Introduction
 
+HannesExchange is a smart contract implementation of a decentralized exchange based on the constant product automated market maker model. It includes two versions: HannesExchangeV1 and HannesExchangeV2:
+
+- `HannesExchangeV1Pair`: Uses `ETH` as the base currency, supporting only direct `ETH ↔ ERC20` swaps
+- `HannesExchangeV2Pair`: Supports any `ERC20` token pair, removing the `ETH` base currency restriction
+
+---
+
 This project architectural overview document describes the **overall architecture**, **detailed design principles**, and **development philosophy** of the Hannes Exchange V1 project.
 
 The overall architecture of this project references the core contract architecture of Uniswap V1 and Uniswap V2, namely the `Router - Factory - Pair/Pool` architecture.
@@ -15,6 +22,8 @@ Considering these requirements and the project's limited time and resources (7 d
 - Hannes Exchange V2 can be understood as a simplified version of Uniswap V2 implemented in Solidity, omitting the `Router` contract, with upgradeable functionality, enhanced security, and role-based access control implementation. ( `ERC20 ↔ ERC20` supported)
 
 To implement a complete `Router - Factory - Pair/Pool` architecture and direct `ERC20 ↔ ERC20` exchange functionality, it would require introducing a `Router` contract with `ETH-wrapper` logic and a new LP contract framework containing only `ERC20 ↔ ERC20` exchange logic, which could reference the implementation of [HannesExchangeV2Pair](../src/HannesExchangeV2Pair.sol) and the respective factory contract [HannesExchangeV2Factory](../src/HannesExchangeV2Factory.sol) in this project.
+
+---
 
 This project's author is [Hannes Gao (hannesgao.eth)](https://github.com/hannesgao).
 
