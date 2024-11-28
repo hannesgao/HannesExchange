@@ -1,11 +1,11 @@
-# Hannes Exchange V1 & V2 项目架构概述
+# HannesExchange 项目架构概述
 
 ## 1. 项目简介
 
 HannesExchange 是一个基于恒定乘积自动做市商模式的去中心化交易所的智能合约实现，包含 HannesExchangeV1 和 HannesExchangeV2 两个版本：
 
-- `HannesExchangeV1Pair`：`ETH` 作为基础货币，只支持 `ETH ↔ ERC20` 直接兑换
-- `HannesExchangeV2Pair`：任意 `ERC20` 代币对，移除了 `ETH` 作为基础货币的限制
+- `HannesExchangeV1`：`ETH` 作为基础货币，只支持 `ETH ↔ ERC20` 直接兑换
+- `HannesExchangeV2`：任意 `ERC20` 代币对，移除了 `ETH` 作为基础货币的限制
 
 ---
 

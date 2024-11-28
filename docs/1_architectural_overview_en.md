@@ -1,11 +1,11 @@
-# Hannes Exchange V1 & V2 Project Architectural Overview
+# HannesExchange Project Architectural Overview
 
 ## 1. Project Introduction
 
 HannesExchange is a smart contract implementation of a decentralized exchange based on the constant product automated market maker model. It includes two versions: HannesExchangeV1 and HannesExchangeV2:
 
-- `HannesExchangeV1Pair`: Uses `ETH` as the base currency, supporting only direct `ETH ↔ ERC20` swaps
-- `HannesExchangeV2Pair`: Supports any `ERC20` token pair, removing the `ETH` base currency restriction
+- `HannesExchangeV1`: Uses `ETH` as the base currency, supporting only direct `ETH ↔ ERC20` swaps
+- `HannesExchangeV2`: Supports any `ERC20` token pair, removing the `ETH` base currency restriction
 
 ---
 
