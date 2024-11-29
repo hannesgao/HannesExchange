@@ -21,7 +21,7 @@ import "forge-std/Script.sol";
 /// HannesExchangeV1Factory 代理合约地址：0xCE93b8542a1F6fF1A60C22Ed4666118512faD696
 
 /// 部署流动性池所需的，已部署好的，可用于测试用的ERC20代币合约地址：
-/// Hannes Exchange Simple Token (HEST) 合约地址：0xC6A8d2850F326B769bb4e3187621d2B5f18dBFd3
+/// Hannes Exchange Simple Token (HEST) 合约地址：0x97C1eeaeB7c648C1ff14F9a40eFfb4ce92be7643
 /// Hannes Exchange Test TokenV2 (HETTV2) 代理合约地址：0xb711c0fA82D2ed7814282c83AE15B6F944DD2b50
 
 contract DeployHannesExchangeV1Pair is Script {

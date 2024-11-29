@@ -78,6 +78,7 @@ contract HannesExchangeV1Pair is
         address _pauser
     ) public initializer {
         require(_tokenAddress != address(0), "Token address cannot be 0");
+        require(isERC20(_tokenAddress), "HannesExchangeV2Pair: TOKEN_NOT_ERC20");
         require(_admin != address(0), "Admin address cannot be 0");
         require(_upgrader != address(0), "Upgrader address cannot be 0");
         require(_pauser != address(0), "Pauser address cannot be 0");
@@ -324,6 +325,39 @@ contract HannesExchangeV1Pair is
 
         emit TokenSold(msg.sender, tokensSold, ethAmount);
         return ethAmount;
+    }
+
+    /**
+     * @dev 检查一个地址是否为智能合约
+     * @param addr 要检查的地址
+     * @return bool 如果地址是合约地址，返回 `true`，否则返回 `false`
+     */
+    function isContract(address addr) internal view returns (bool) {
+        uint256 size;
+        assembly {
+            size := extcodesize(addr)
+        }
+        return size > 0;
+    }
+
+    /**
+     * @dev 判断给定的地址是否实现了 ERC-20 标准接口
+     *      该函数首先检查地址是否为合约，然后验证该合约是否能够成功响应 `totalSupply()` 方法调用
+     * @param token 要验证的地址
+     * @return bool 如果地址是一个有效的 ERC-20 Token 合约地址，返回 `true`，否则返回 `false`
+     */
+    function isERC20(address token) public view returns (bool) {
+        // 检查地址是否为合约
+        if (!isContract(token)) {
+            return false;
+        }
+
+        // 尝试调用 totalSupply 方法
+        try IERC20(token).totalSupply() returns (uint256) {
+            return true;
+        } catch {
+            return false;
+        }
     }
 
     /**

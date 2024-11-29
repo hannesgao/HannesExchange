@@ -101,7 +101,12 @@ contract HannesExchangeV2Pair is
         /// 安全性：代币地址检查
         require(_token0 != address(0), "HannesExchangeV2Pair: ZERO_ADDRESS");
         require(_token1 != address(0), "HannesExchangeV2Pair: ZERO_ADDRESS");
-        require(_token0 != _token1, "HannesExchangeV2Pair: IDENTICAL_ADDRESSES");
+        require(
+            _token0 != _token1,
+            "HannesExchangeV2Pair: IDENTICAL_ADDRESSES"
+        );
+        require(isERC20(_token0), "HannesExchangeV2Pair: TOKEN_0_NOT_ERC20");
+        require(isERC20(_token1), "HannesExchangeV2Pair: TOKEN_1_NOT_ERC20");
 
         /// 安全性: 初始化所有基础合约
         __Pausable_init();
@@ -459,7 +464,10 @@ contract HannesExchangeV2Pair is
         uint256 reserveIn,
         uint256 reserveOut
     ) public pure returns (uint256 amountOut) {
-        require(amountIn > 0, "HannesExchangeV2Pair: INSUFFICIENT_INPUT_AMOUNT");
+        require(
+            amountIn > 0,
+            "HannesExchangeV2Pair: INSUFFICIENT_INPUT_AMOUNT"
+        );
         require(
             reserveIn > 0 && reserveOut > 0,
             "HannesExchangeV2Pair: INSUFFICIENT_LIQUIDITY"
@@ -469,6 +477,39 @@ contract HannesExchangeV2Pair is
         uint256 numerator = amountInWithFee * reserveOut;
         uint256 denominator = reserveIn * FEE_DENOMINATOR + amountInWithFee;
         amountOut = numerator / denominator;
+    }
+
+    /**
+     * @dev 检查一个地址是否为智能合约
+     * @param addr 要检查的地址
+     * @return bool 如果地址是合约地址，返回 `true`，否则返回 `false`
+     */
+    function isContract(address addr) internal view returns (bool) {
+        uint256 size;
+        assembly {
+            size := extcodesize(addr)
+        }
+        return size > 0;
+    }
+
+    /**
+     * @dev 判断给定的地址是否实现了 ERC-20 标准接口
+     *      该函数首先检查地址是否为合约，然后验证该合约是否能够成功响应 `totalSupply()` 方法调用
+     * @param token 要验证的地址
+     * @return bool 如果地址是一个有效的 ERC-20 Token 合约地址，返回 `true`，否则返回 `false`
+     */
+    function isERC20(address token) public view returns (bool) {
+        // 检查地址是否为合约
+        if (!isContract(token)) {
+            return false;
+        }
+
+        // 尝试调用 totalSupply 方法
+        try IERC20(token).totalSupply() returns (uint256) {
+            return true;
+        } catch {
+            return false;
+        }
     }
 
     /**
