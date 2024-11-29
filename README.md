@@ -71,14 +71,40 @@ forge test -vvvvv
 ```
 
 ## 6. Deployment
-```bash
-# Deploy V1 Factory
-forge script script/DeployHannesExchangeV1Factory.s.sol --rpc-url sepolia --broadcast --verify
-```
+### 6.1 Deploy HannesExchangeV1 Factory Contract
 
 ```bash
-# Deploy V1 Pair
-forge script script/DeployHannesExchangeV1Pair.s.sol --rpc-url sepolia --broadcast --verify
+forge script script/DeployHannesExchangeV1Factory.s.sol \
+    --rpc-url sepolia \
+    --broadcast \
+    --verify
+```
+
+### 6.2 Deploy HannesExchangeV1 Liquidity Pool Contract
+
+```bash
+forge script script/DeployHannesExchangeV1Pair.s.sol \
+    --rpc-url sepolia \
+    --broadcast \
+    --verify
+```
+
+### 6.3 Deploy HannesExchangeV2 Factory Contract
+
+```bash
+forge script script/DeployHannesExchangeV2.s.sol:DeployHannesExchangeV2 \
+    --rpc-url sepolia \
+    --broadcast \
+    --verify
+```
+
+### 6.4 Deploy HannesExchangeV2 Liquidity Pool Contract
+
+```bash
+forge script script/DeployHannesExchangeV2.s.sol:CreatePairV2 \
+    --rpc-url sepolia \
+    --broadcast \
+    --verify
 ```
 
 ## 7. Security Features
