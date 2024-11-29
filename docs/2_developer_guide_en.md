@@ -605,7 +605,7 @@ mapping(address => mapping(address => address)) public getPair;
 #### 8.1.2 Deploy HannesExchangeV2 Factory Contract
 
 ```bash
-forge script script/DeployHannesExchangeV2Factory.s.sol \
+forge script script/DeployHannesExchangeV2.s.sol:DeployHannesExchangeV2 \
     --rpc-url sepolia \
     --broadcast \
     --verify
@@ -614,7 +614,7 @@ forge script script/DeployHannesExchangeV2Factory.s.sol \
 #### 8.1.3 Deploy HannesExchangeV2 Liquidity Pool Contract
 
 ```bash
-forge script script/DeployHannesExchangeV2Pair.s.sol \
+forge script script/DeployHannesExchangeV2.s.sol:CreatePairV2 \
     --rpc-url sepolia \
     --broadcast \
     --verify
